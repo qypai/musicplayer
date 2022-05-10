@@ -51,7 +51,7 @@ function initmusic() {
 // 歌曲初始化函数需要在拿到数据后才能正常使用
 async function wait() {
     await http()
-    console.log(musicList);
+        // 请求数据后再初始化歌曲信息
     await initmusic()
 }
 // 初始化
@@ -216,8 +216,6 @@ function selectTrack(flag) {
     } else {
         --cur_index;
     }
-    console.log(cur_index);
-
     if (cur_index > -1) {
         if (flag == 0) {
             play_pause.querySelector('.fa').classList = 'fa fa-play';
@@ -235,20 +233,19 @@ function selectTrack(flag) {
             if (flag == -1) {
                 // 初始化歌曲信息
                 initmusic()
-                    // 当切换上一首,下一首时,自动播放
+                    // 当切换上一首时,自动播放
                 audio.play();
             } else {
                 if (musicList.length == cur_index) {
                     // 初始化歌曲信息
-                    console.log(cur_index);
                     // 如果是下一首是曲库最后一首就发送请求
                     wait()
-                        // 当切换上一首,下一首时,自动播放
+                        // 当切换下一首时,自动播放
                     audio.play();
                 } else {
                     // 初始化歌曲信息
                     initmusic()
-                        // 当切换上一首,下一首时,自动播放
+                        // 当切换下一首时,自动播放
                     audio.play();
                 }
 
@@ -264,7 +261,6 @@ function http() {
     return new Promise((reslove, reject) => {
         var xhr = new XMLHttpRequest();
         // 2.设置请求类型
-        //实质？ 当需要传递参数的时候用xx==xx&的形式在地址后面拼接字符串
         xhr.open('GET', 'https://api.uomg.com/api/rand.music?sort=热歌榜&format=json')
             // 3.发送请求
         xhr.send()
@@ -277,16 +273,12 @@ function http() {
             //4: 请求已完成，且响应已就绪
 
             if (xhr.status == 200 && xhr.readyState == 4) {
-                console.log(xhr.responseText); //字符串
-
                 let result = JSON.parse(xhr.responseText) // 转换成对象
                 let musicdata = result.data
                     // 把请求数据导入数组
                 musicList.push(musicdata)
                 reslove(musicdata)
                 console.log(musicList);
-                // 初始化歌曲信息
-                // initmusic()
 
             }
         }
